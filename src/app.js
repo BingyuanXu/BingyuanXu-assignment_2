@@ -8,6 +8,9 @@ function success(position) {
 
   getCurrentWeatherJson(latitude, longitude)
     .then((json) => renderCurrentWeather(json));
+
+  getForecastJson(latitude, longitude)
+    .then((json) => console.log(json))
 }
 
 function error() {
@@ -36,4 +39,15 @@ function renderCurrentWeather(json) {
      <div class="temp">${Math.round(json.main.temp)}℃</div>
      <div class="condition">${json.weather[0].description}</div>
     `;
+}
+
+function getForecastJson(latitude, longitude) {
+  return fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`)
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error(`There is a problem in  forecast`);
+      }
+    });
 }
