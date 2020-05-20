@@ -12,9 +12,21 @@ navigator.geolocation.getCurrentPosition(success, error);
 function success(position) {
   latitude = position.coords.latitude;
   longitude = position.coords.longitude;
+  getCurrentWeatherJson(latitude, longitude)
 }
 
 function error() {
   status.textContent = 'Unable to retrieve your location';
 }
 
+function getCurrentWeatherJson(latitude, longitude) {
+  fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`)
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error(`There is a problem in current weather`);
+      }
+    })
+    .then((json) => console.log(json));
+}
