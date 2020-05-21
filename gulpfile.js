@@ -1,43 +1,56 @@
 const gulp = require('gulp');
+const { parallel } = require('gulp');
 const browserSync = require('browser-sync').create();
 const cleanCSS = require('gulp-clean-css');
 const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
 
-function transpileAndCompress() {
-  return gulp.src('src/*.js')
+function transpileAndCompress(cb) {
+  gulp.src('src/*.js')
     .pipe(babel({
-        presets: ['@babel/env']
+      presets: ['@babel/env']
     }))
     .pipe(uglify())
     .pipe(gulp.dest('dist/js'))
+
+  cb();
 }
 
-function minifyCSS() {
-  return gulp.src('src/*.css')
+function minifyCSS(cb) {
+  gulp.src('src/*.css')
     .pipe(cleanCSS())
     .pipe(gulp.dest('dist/css'));
+
+  cb();
 }
 
-function sync() {
+function sync(cb) {
   browserSync.init({
     server: {
       baseDir: "./dist"
     }
   });
+
+  cb();
 }
 
-function copyHTML() {
-  return gulp.src('index.html')
+function copyHTML(cb) {
+  gulp.src('index.html')
     .pipe(gulp.dest('dist'));
+
+  cb();
 }
 
-exports.default = function() {
+function watch() {
   gulp.watch('src/*.css', minifyCSS);
   gulp.watch('src/*.js', transpileAndCompress);
   gulp.watch('index.html', copyHTML);
-  minifyCSS();
-  transpileAndCompress();
-  copyHTML();
-  sync();
-};
+}
+
+exports.default = parallel(
+  watch,
+  minifyCSS,
+  transpileAndCompress,
+  copyHTML,
+  sync
+)
