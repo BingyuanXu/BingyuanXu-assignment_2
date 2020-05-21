@@ -26,9 +26,11 @@ function minifyCSS(cb) {
 
 function sync(cb) {
   browserSync.init({
+    files: ["*.html", "src/*.css", "src/*.js"], 
     server: {
-      baseDir: "./dist"
-    }
+      baseDir: "./"
+    },
+    ghostMode: { clicks: true, scroll: true }, 
   });
 
   cb();
