@@ -1,5 +1,30 @@
 const apiKey = `b8aa8c39c4012f71e59cf320be595b6b`;
 
+class Forecast {
+  constructor(daysLater) {
+    this.daysLater = daysLater;
+  }
+
+  _getNoonWeather(list) {
+    const noonWeatherList = list.filter((ele) => {
+      const date = new Date(ele[`dt_txt`]); 
+      return date.getHours() === 12;
+    })
+    console.log(noonWeatherList[this.daysLater]);
+    return noonWeatherList[this.daysLater];
+  }
+
+  getIcon(list) {
+    const noonWeather = this._getNoonWeather(list);
+    return `http://openweathermap.org/img/wn/${noonWeather.weather[0].icon}@2x.png`;
+  }
+
+  getWeather(list) {
+    const noonWeather = this._getNoonWeather(list);
+    return noonWeather.weather[0].description;
+  }
+}
+
 navigator.geolocation.getCurrentPosition(success, error);
 
 function success(position) {
@@ -10,7 +35,11 @@ function success(position) {
     .then((json) => renderCurrentWeather(json));
 
   getForecastJson(latitude, longitude)
-    .then((json) => console.log(json))
+    .then((json) => {
+      console.log(json.list);
+      let a = new Forecast(1);
+      console.log(a.getIcon(json.list));
+    })
 }
 
 function error() {
@@ -31,7 +60,7 @@ function getCurrentWeatherJson(latitude, longitude) {
 
 function renderCurrentWeather(json) {
   const currentConditionsEle = document.querySelector(`.current-conditions`);
-  
+
   currentConditionsEle.innerHTML = `
      <h2>Current Conditions</h2>
      <img src="http://openweathermap.org/img/wn/${json.weather[0].icon}@2x.png" />
@@ -51,3 +80,10 @@ function getForecastJson(latitude, longitude) {
       }
     });
 }
+
+// function renderForcast(json) {
+//   const forecastArray = json.list;
+
+
+// }
+
